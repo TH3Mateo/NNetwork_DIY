@@ -7,6 +7,7 @@ print(tensorflow.__version__)
 print(keras.__version__)
 
 
+
 @jit(target_backend="cuda")
 def func(a):
     for i in range(10000000):
@@ -22,4 +23,3 @@ def main():
     print("end")
 
 
-main()
