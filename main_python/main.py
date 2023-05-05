@@ -23,4 +23,4 @@ def main():
     func(np.ones(10000000))
     print("end")
 
-
+main()
