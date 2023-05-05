@@ -1,10 +1,8 @@
 import os
 
-def create_path(filename):
-    path_str = os.path.dirname(__file__).split("\\")
-    absolute_path = path_str[0:-1]
-    return "\\".join(absolute_path)+"\\"+filename
+
+def create_path(filename):return "\\".join(os.path.dirname(__file__).split("\\")[0:-1])+"\\"+filename
 
 
 
-print(create_path("scikit_learn_boston_dataset.csv"))
+print(create_path("data\\scikit_learn_boston_dataset.csv"))
