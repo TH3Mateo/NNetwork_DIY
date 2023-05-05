@@ -1,0 +1,18 @@
+"C:\Program Files\JetBrains\CLion 2022.3.1\bin\cmake\win\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug -G "NMake Makefiles" "-DCMAKE_CUDA_COMPILER=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.8\bin\nvcc.exe" -S D:\PycharmProjects\WSI\TASK_5\C_translation -B D:\PycharmProjects\WSI\TASK_5\C_translation\cmake-build-cuda_debug
+-- The CUDA compiler identification is NVIDIA 11.8.89
+CMake Error at cmake-build-cuda_debug/CMakeFiles/3.24.2/CMakeCUDACompiler.cmake:1 (set):
+  Syntax error in cmake code at
+
+    D:/PycharmProjects/WSI/TASK_5/C_translation/cmake-build-cuda_debug/CMakeFiles/3.24.2/CMakeCUDACompiler.cmake:1
+
+  when parsing string
+
+    C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.8\bin\nvcc.exe
+
+  Invalid character escape '\P'.
+Call Stack (most recent call first):
+  CMakeLists.txt:2 (project)
+
+
+-- Configuring incomplete, errors occurred!
+See also "D:/PycharmProjects/WSI/TASK_5/C_translation/cmake-build-cuda_debug/CMakeFiles/CMakeOutput.log".

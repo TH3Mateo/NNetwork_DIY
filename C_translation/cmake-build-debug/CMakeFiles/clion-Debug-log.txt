@@ -1,0 +1,38 @@
+"C:\Program Files\JetBrains\CLion 2022.3.1\bin\cmake\win\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug "-DCMAKE_MAKE_PROGRAM=C:/Program Files/JetBrains/CLion 2022.3.1/bin/ninja/win/ninja.exe" -G Ninja -S D:\PycharmProjects\WSI\TASK_5\C_translation -B D:\PycharmProjects\WSI\TASK_5\C_translation\cmake-build-debug
+-- The CUDA compiler identification is NVIDIA 11.8.89
+-- Detecting CUDA compiler ABI info
+-- Detecting CUDA compiler ABI info - failed
+-- Check for working CUDA compiler: C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.8/bin/nvcc.exe
+-- Check for working CUDA compiler: C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.8/bin/nvcc.exe - broken
+CMake Error at C:/Program Files/JetBrains/CLion 2022.3.1/bin/cmake/win/share/cmake-3.24/Modules/CMakeTestCUDACompiler.cmake:102 (message):
+  The CUDA compiler
+
+    "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.8/bin/nvcc.exe"
+
+  is not able to compile a simple test program.
+
+  It fails with the following output:
+
+    Change Dir: D:/PycharmProjects/WSI/TASK_5/C_translation/cmake-build-debug/CMakeFiles/CMakeTmp
+    
+    Run Build Command(s):C:/Program Files/JetBrains/CLion 2022.3.1/bin/ninja/win/ninja.exe cmTC_35ec5 && [1/2] Building CUDA object CMakeFiles\cmTC_35ec5.dir\main.cu.obj
+    main.cu
+    [2/2] Linking CUDA executable cmTC_35ec5.exe
+    FAILED: cmTC_35ec5.exe 
+    cmd.exe /C "cd . && "C:\Program Files\JetBrains\CLion 2022.3.1\bin\cmake\win\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_35ec5.dir --rc=C:\PROGRA~2\WI3CF2~1\10\bin\100226~1.0\x64\rc.exe --mt=C:\PROGRA~2\WI3CF2~1\10\bin\100226~1.0\x64\mt.exe --manifests  -- C:\PROGRA~2\MICROS~2\2022\BUILDT~1\VC\Tools\MSVC\1435~1.322\bin\Hostx64\x64\link.exe /nologo CMakeFiles\cmTC_35ec5.dir\main.cu.obj  /out:cmTC_35ec5.exe /implib:cmTC_35ec5.lib /pdb:cmTC_35ec5.pdb /version:0.0 /debug /INCREMENTAL  cudadevrt.lib  cudart_static.lib  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib -LIBPATH:"C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.8/lib/x64"  && cd ."
+    LINK Pass 1: command "C:\PROGRA~2\MICROS~2\2022\BUILDT~1\VC\Tools\MSVC\1435~1.322\bin\Hostx64\x64\link.exe /nologo CMakeFiles\cmTC_35ec5.dir\main.cu.obj /out:cmTC_35ec5.exe /implib:cmTC_35ec5.lib /pdb:cmTC_35ec5.pdb /version:0.0 /debug /INCREMENTAL cudadevrt.lib cudart_static.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib -LIBPATH:C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.8/lib/x64 /MANIFEST /MANIFESTFILE:CMakeFiles\cmTC_35ec5.dir/intermediate.manifest CMakeFiles\cmTC_35ec5.dir/manifest.res" failed (exit code 1104) with the following output:
+    LINK : fatal error LNK1104: cannot open file 'LIBCMT.lib'
+    ninja: build stopped: subcommand failed.
+    
+    
+
+  
+
+  CMake will not be able to correctly generate this project.
+Call Stack (most recent call first):
+  CMakeLists.txt:2 (project)
+
+
+-- Configuring incomplete, errors occurred!
+See also "D:/PycharmProjects/WSI/TASK_5/C_translation/cmake-build-debug/CMakeFiles/CMakeOutput.log".
+See also "D:/PycharmProjects/WSI/TASK_5/C_translation/cmake-build-debug/CMakeFiles/CMakeError.log".
