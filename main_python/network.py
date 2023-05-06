@@ -1,11 +1,15 @@
 import sys
-
+import math
 import layers
 from layers import Layer
 import numpy as np
 import cupy as cp
 import random
-
+try:
+    import cPickle as pickle
+except ModuleNotFoundError:
+    import pickle
+import utilities as u
 
 # from numba import jit
 
@@ -19,6 +23,10 @@ class Network:
     def add_layer(self, layer: Layer):
         self.layers.append(layer)
 
+########################################
+    #  NIE ROBIE TRANSPOZYCJI DANYCH, TRZEBA GDZIES ZROBIC
+########################################
+
     def mass_predict(self, X):
         out = []
         A = cp.array(X)
@@ -29,12 +37,7 @@ class Network:
         return out
 
     def back_prop(self, X, Y, data, learning_rate):
-        # predictions = self.mass_predict(X)
-        # dz, dw, db = [], [], []
-        # for index in range(len(self.layers) - 1, 0, -1):
-        #     dz[index] = self.layers[index + 1].weights * dz[index + 1] * self.layers[index].activation_deriv(
-        #         predictions[index][0])
-        #     dw[index] = (dz[index] * self.layers[index - 1]
+
         dZ_prev = None
         for i in reversed(range(len(self.layers))):
             if i == len(self.layers) - 1:
@@ -56,15 +59,37 @@ class Network:
     #     for i in reversed(range(len(self.layers))):
     #         print(i)
 
-    def train(self):
-        print(len(self.layers))
+    def train(self, full_X, full_Y, iterations, learning_rate, batch_size):
+
         for index in range(len(self.layers)):
-            # print(index)
             self.layers[index].weights = np.random.rand(self.layers[index].node_count, (1 if index == len(self.layers)-1 else self.layers[index+1].node_count)) - 0.5
             self.layers[index].bias = np.random.rand((0 if index == len(self.layers)-1 else self.layers[index+1].node_count)) - 0.5
+        rounds = 0
+        loss = 420 # just a big number to initiate loss for the first iteration
+        batch_count = math.ceil(len(full_X)/batch_size)
+        while iterations>0 and loss > 0.01:
 
-        # for iteration in range(iterations):
-        #     pass
+            dataset =np.append(full_X,full_Y,axis=1)
+            np.random.shuffle(dataset)
+            for b in range(batch_count):
+
+                batch = dataset[b*batch_size:(b+1)*batch_size]# tu trzeba bedzie zabezpieczyc w razie jakby nie dzieliło sie idealnie rowno
+                X_batch = batch[:,:-1]
+                Y_batch = batch[:,[-1]]
+                data = self.mass_predict(X_batch)
+                self.back_prop(X_batch, Y_batch, data, learning_rate)
+                loss = calc_loss(Y_binarator(Y_batch), output_binarator(data[-1][1]))
+            iterations -= 1
+
+    def save_model(self, file_name):
+        with open(u.create_path("models\\"+file_name), 'wb') as f:
+            pickle.dump(self, f,pickle.HIGHEST_PROTOCOL)
+
+
+
+def calc_loss(predicted,expected):
+    return np.sum((predicted-expected)**2)/len(predicted)
+
 
 
 def output_binarator(output):  # takes output in form of probability of each class
