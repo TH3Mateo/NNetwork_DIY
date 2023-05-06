@@ -11,13 +11,24 @@ class Layer:
             'relu': lambda x: np.maximum(0, x),
             'softmax': lambda x: np.exp(x) / np.sum(np.exp(x)),
         }[activation_function]
+
+        self.activation_deriv = {
+            'sigmoid': lambda x: x * (1 - x),
+            'tanh': lambda x: 1 - x ** 2,
+            'relu': lambda x: 1. * (x > 0),
+            'softmax': lambda x: x * (1 - x),
+
+        }
         self.weights = None
         self.bias = None
 
 
 
 def calc_layer(layer: Layer, input: cp.array):
-    Z = input * layer.weights + layer.bias
+    print(input.shape)
+    print(layer.weights.shape)
+    print(layer.bias.shape)
+    Z = input * cp.asarray(layer.weights) + cp.asarray(layer.bias)
     A= layer.activation_function(Z)
     return Z, A
 
