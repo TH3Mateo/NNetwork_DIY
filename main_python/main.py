@@ -11,7 +11,7 @@ print(keras.__version__)
 @jit(target_backend="cuda")
 def func(a):
     for i in range(10000000):
-        a[i] += 1
+        a += 1
     return a
 
 
@@ -19,7 +19,8 @@ def func(a):
 
 def main():
     print("start")
-    func(np.ones(10000000))
+    print(func(15))
     print("end")
 
 
+main()
