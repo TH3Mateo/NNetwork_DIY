@@ -44,18 +44,18 @@ class Network:
         dZ_prev = None
         for i in reversed(range(len(self.layers))):
             if i == len(self.layers) - 1:
-                dZ = data[i][1] - Y_binarator(Y)
+                dZ = cp.asarray(data[i][1] - Y_binarator(Y))
             else:
-                dZ = self.layers[i + 1].weights.transpose() * dZ_prev * self.layers[i].activation_deriv(data[i][0])
+                dZ = cp.asarray(self.layers[i + 1].weights).transpose() * dZ_prev * self.layers[i].activation_deriv(cp.asarray(data[i][0]))
 
             if i == 0:
-                dW = (dZ * X.transpose()) / len(X)
+                dW = (dZ * cp.asarray(X).transpose()) / len(X)
             else:
                 dW = (dZ * data[i - 1][1].transpose()) / len(X)
 
             dB = (np.sum(dZ, axis=1)) / len(X)
             dZ_prev = dZ
-            self.layers[i].weights = self.layers[i].weights - learning_rate * dW
+            self.layers[i].weights = cp.asnumpy(self.layers[i].weights - learning_rate * dW)
             self.layers[i].bias = self.layers[i].bias - learning_rate * dB
 
     # def tester(self):
