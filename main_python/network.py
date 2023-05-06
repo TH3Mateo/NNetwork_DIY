@@ -56,8 +56,8 @@ class Network:
                 print("i kin calculating dZ: ",i)
                 print(cp.asarray(self.layers[i+1].weights).transpose().shape)
                 print(dZ_prev.shape)
-                # print(self.layers[i].activation_deriv(cp.asarray(data[i][0]).shape))
-                dZ = cp.dot(cp.asarray(self.layers[i + 1].weights),cp.dot(dZ_prev*self.layers[i].activation_deriv(cp.asarray(data[i][0])))
+                print(self.layers[i].activation_deriv(cp.asarray(data[i][0]).shape))
+                dZ = cp.dot(cp.asarray(self.layers[i + 1].weights),cp.dot(dZ_prev,self.layers[i].activation_deriv(cp.asarray(data[i][0]))))
 
             if i == 0:
                 dW = (dZ * cp.asarray(X).transpose()) / len(X)
