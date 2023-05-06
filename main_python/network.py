@@ -49,9 +49,12 @@ class Network:
 
 
         dZ_prev = None
-        for i in reversed(range(len(self.layers))):
-            if i == len(self.layers) - 1:
-                dZ = cp.asarray(data[i][1] - Y_binarator(Y))
+        for i in reversed(range(len(self.layers)-1)):
+            if i == len(self.layers) - 2:
+                # print("Train dz: ")
+                # print(data[i][1].shape)
+                # print(Y_binarator(Y).shape)
+                dZ = cp.asarray(data[i][1] - Y_binarator(Y).transpose())
             else:
                 print("i kin calculating dZ: ",i)
                 print(cp.asarray(self.layers[i+1].weights).transpose().shape)
@@ -60,9 +63,12 @@ class Network:
                 dZ = cp.dot(cp.asarray(self.layers[i + 1].weights),cp.dot(dZ_prev,self.layers[i].activation_deriv(cp.asarray(data[i][0]))))
 
             if i == 0:
-                dW = (dZ * cp.asarray(X).transpose()) / len(X)
+                dW = cp.dot(dZ,cp.asarray(X).transpose()) / len(X)
             else:
-                dW = (dZ * cp.asarray(data[i - 1][1]).transpose()) / len(X)
+                # print("Train dw: ")
+                # print(dZ.shape)
+                # print(cp.asarray(data[i - 1][1]).transpose().shape)
+                dW = cp.dot(cp.asarray(data[i - 1][1]).transpose(),(dZ)) / len(X)
 
             dB = (np.sum(dZ, axis=0)) / len(X)
             dZ_prev = dZ
@@ -130,3 +136,7 @@ def output_numerator(output):
     for i in range(len(output)):
         max.append(np.argmax(output[i]))
     return max
+
+
+# print(output_binarator([[0.1, 0.3, 0.123, 0.321],[0.1, 0.3, 0.123, 0.321],[0.1, 0.3, 0.123, 0.321],[0.1, 0.3, 0.123, 0.321]]))
+# print(output_numerator([[0.12, 0.32, 0.123, 0.321],[0.11, 0.3, 0.1231, 0.321],[0.13, 0.3, 0.123, 0.321],[0.14, 0.3, 0.1234, 0.3211]]))
