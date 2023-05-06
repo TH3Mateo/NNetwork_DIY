@@ -20,15 +20,16 @@ def data_viewer():
 
 
 def data_saver():
-    db = fetch_openml('mnist_784',parser='auto')
-    df = pd.DataFrame(db.data, columns=db.feature_names)
+    db,y = fetch_openml('mnist_784',parser='auto',return_X_y=True)
+    print(db.head())
+    print(y.head())
+    df = db.concat(pd.DataFrame(y,columns=["label"]),ignore_index=True)
     df.to_csv(u.create_path("data\\mnist_digits_full_dataset.csv"), index=False)
 
 def data_loader(filename):
+    print("Loading data...")
     df = pd.read_csv(u.create_path("data\\"+filename))
+    print(df.head())
     return  np.ndarray(df.drop("label", axis=1)),np.ndarray(df["label"])
 
-
-
-
-data_viewer()
+data_saver()

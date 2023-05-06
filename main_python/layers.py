@@ -1,6 +1,6 @@
 import numpy as np
-from numba import jit
-# import cupy as cp
+# from numba import jit
+import cupy as cp
 
 class Layer:
     def __init__(self, node_count: int, activation_function: str):
@@ -15,11 +15,11 @@ class Layer:
         self.bias = None
 
 
-# @jit(target_backend="cuda")
-def calc_layer(layer: Layer, input: np.ndarray):
+
+def calc_layer(layer: Layer, input: cp.array):
     Z = input * layer.weights + layer.bias
     A= layer.activation_function(Z)
-    return [Z, A]
+    return Z, A
 
 
 # test_layer = Layer(10, 'sigmoid')

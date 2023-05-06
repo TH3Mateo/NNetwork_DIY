@@ -1,8 +1,9 @@
 import layers
 from layers import Layer
 import numpy as np
+import cupy as cp
 import random
-from numba import jit
+# from numba import jit
 
 
 class Network:
@@ -16,16 +17,20 @@ class Network:
 
 
     def mass_predict(self, X):
+        out=[]
+        A=cp.array(X)
         for layer in self.layers:
-             = layers.calc_layer(layer, X)[1]
+            Z,A = layers.calc_layer(layer, A)
+            out.append([np.array(Z),np.array(A)])
 
-    @jit(target_backend="cuda")
+
     def train(self, X, Y, iterations, learning_rate, batch_size):
         for index in range(len(self.layers) - 1):
-            self.layers[index].weights = np.random.rand(self.layers[index].node_count, self.layers[index+1].node_count)
-            self.layers[index].bias = np.random.rand(self.layers[index].node_count)
+            self.layers[index].weights = np.random.rand(self.layers[index].node_count, self.layers[index+1].node_count)-0.5
+            self.layers[index].bias = np.random.rand(self.layers[index].node_count)-0.5
 
         for iteration in range(iterations):
+
             pass
 
 
@@ -33,7 +38,7 @@ class Network:
 
 
 
-def output_binarator(output):
+def output_binarator(output):  #takes output in form of probability of each class
     max = np.argmax(output)
     output = np.zeros(len(output))
     output[max] = 1
