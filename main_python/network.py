@@ -70,6 +70,7 @@ class Network:
                 # print(cp.asarray(data[i - 1][1]).transpose().shape)
                 dW = cp.dot(cp.asarray(data[i - 1][1]).transpose(),(dZ)) / len(X)
 
+
             dB = (np.sum(dZ, axis=0)) / len(X)
             dZ_prev = dZ
             self.layers[i].weights = self.layers[i].weights - cp.asnumpy(learning_rate * dW)
@@ -99,7 +100,8 @@ class Network:
                 Y_batch = batch[:, [-1]]
                 data = self.mass_predict(X_batch)
                 self.back_prop(X_batch, Y_batch, data, learning_rate)
-                loss = calc_loss(Y_binarator(Y_batch), output_binarator(data[-1][1]))
+
+                loss = calc_loss(Y_binarator(Y_batch), output_binarator(data[-2][1]))
             iterations -= 1
 
     def save_model(self, file_name):
