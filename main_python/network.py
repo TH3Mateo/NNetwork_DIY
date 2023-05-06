@@ -27,13 +27,16 @@ class Network:
     #  NIE ROBIE TRANSPOZYCJI DANYCH, TRZEBA GDZIES ZROBIC
 ########################################
 
-    def mass_predict(self, X):
+    def mass_predict(self, X: np.array):
         out = []
         A = cp.array(X)
         for layer in self.layers:
             print(layer)
             Z, A = layers.calc_layer(layer, A)
             out.append([cp.asnumpy(Z), cp.asnumpy(A)])
+
+        del Z,A
+        cp._default_memory_pool.free_all_blocks()
         return out
 
     def back_prop(self, X, Y, data, learning_rate):
@@ -98,7 +101,7 @@ def output_binarator(output):  # takes output in form of probability of each cla
     output[max] = 1
     return output
 
-
+#z numerka klasyfikacji na array 0 i 1
 def Y_binarator(Y):
     pass
 
