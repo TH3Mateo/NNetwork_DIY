@@ -30,7 +30,7 @@ def data_saver():
 def data_loader(filename):
     print("Loading data...")
     df = d.read_csv(u.create_path("data\\"+filename))
-    print(df.head())
+    # print(df.head())
     return  df.compute().drop("class", axis=1).to_numpy(), df.compute()["class"].to_numpy()
 
 # data_saver()

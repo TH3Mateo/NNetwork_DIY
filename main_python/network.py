@@ -1,3 +1,5 @@
+import sys
+
 import layers
 from layers import Layer
 import numpy as np
@@ -21,8 +23,9 @@ class Network:
         out = []
         A = cp.array(X)
         for layer in self.layers:
+            print(layer)
             Z, A = layers.calc_layer(layer, A)
-            out.append([np.array(Z), np.array(A)])
+            out.append([cp.asnumpy(Z), cp.asnumpy(A)])
         return out
 
     def back_prop(self, X, Y, data, learning_rate):
@@ -54,10 +57,11 @@ class Network:
     #         print(i)
 
     def train(self):
-        for index in range(len(self.layers) - 1):
-            self.layers[index].weights = np.random.rand(self.layers[index].node_count,
-                                                        self.layers[index + 1].node_count) - 0.5
-            self.layers[index].bias = np.random.rand(self.layers[index+1].node_count) - 0.5
+        print(len(self.layers))
+        for index in range(len(self.layers)):
+            # print(index)
+            self.layers[index].weights = np.random.rand(self.layers[index].node_count, (1 if index == len(self.layers)-1 else self.layers[index+1].node_count)) - 0.5
+            self.layers[index].bias = np.random.rand((0 if index == len(self.layers)-1 else self.layers[index+1].node_count)) - 0.5
 
         # for iteration in range(iterations):
         #     pass

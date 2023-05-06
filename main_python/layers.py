@@ -27,7 +27,7 @@ def calc_layer(layer: Layer, input: cp.array):
     print(input.shape)
     print(layer.weights.shape)
     print(layer.bias.shape)
-    Z = input * cp.asarray(layer.weights) + cp.asarray(layer.bias)
+    Z = cp.dot(input,cp.asarray(layer.weights) )  + cp.asarray(layer.bias)
     A= layer.activation_function(Z)
     return Z, A
 

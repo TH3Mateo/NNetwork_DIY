@@ -12,7 +12,7 @@ N.add_layer(Layer(512, 'relu'))
 N.add_layer(Layer(128, 'relu'))
 N.add_layer(Layer(10, 'softmax'))
 N.train()
-print(N.mass_predict(X))
+print(N.mass_predict(X)[0])
 # N.tester()
 # N.train(X,Y,100,0.01,100)
 
