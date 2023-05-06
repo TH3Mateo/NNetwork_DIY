@@ -57,23 +57,36 @@ class Network:
                 dZ = cp.asarray(data[i][1] - Y_binarator(Y).transpose())
             else:
                 print("i kin calculating dZ: ",i)
-                print(cp.asarray(self.layers[i+1].weights).transpose().shape)
+                print(cp.asarray(self.layers[i+1].weights).shape)
                 print(dZ_prev.shape)
-                print(self.layers[i].activation_deriv(cp.asarray(data[i][0]).shape))
-                dZ = cp.dot(cp.asarray(self.layers[i + 1].weights),cp.dot(dZ_prev,self.layers[i].activation_deriv(cp.asarray(data[i][0]))))
+                print(self.layers[i].activation_deriv(cp.asarray(data[i][0])).shape)
+
+
+
+                dZ = cp.dot(dZ_prev,cp.asarray(self.layers[i+1].weights).transpose())*self.layers[i].activation_deriv(cp.asarray(data[i][0]))
+                print(dZ.shape)
 
             if i == 0:
-                dW = cp.dot(dZ,cp.asarray(X).transpose()) / len(X)
+                print("Train dw1: ")
+                print(dZ.shape)
+                print(cp.asarray(X).transpose().shape)
+
+                dW = cp.dot(cp.asarray(X).transpose(),dZ) / len(X)
             else:
-                # print("Train dw: ")
-                # print(dZ.shape)
-                # print(cp.asarray(data[i - 1][1]).transpose().shape)
+                print("Train dw: ")
+                print(dZ.shape)
+                print(cp.asarray(data[i - 1][1]).transpose().shape)
+
+
                 dW = cp.dot(cp.asarray(data[i - 1][1]).transpose(),(dZ)) / len(X)
 
 
             dB = (np.sum(dZ, axis=0)) / len(X)
             dZ_prev = dZ
             self.layers[i].weights = self.layers[i].weights - cp.asnumpy(learning_rate * dW)
+            print("----------------")
+            print(self.layers[i].weights.shape)
+            print("----------------------")
             self.layers[i].bias = self.layers[i].bias - cp.asnumpy(learning_rate * dB)
 
     # def tester(self):
@@ -114,6 +127,8 @@ def calc_loss(predicted, expected):
 
 
 def output_binarator(input):
+    print("Binarator ")
+    print(input)
     output = np.zeros((10,len(input)), dtype=int)# takes output in form of probability of each class
     for row in input:
         max = np.argmax(row)
