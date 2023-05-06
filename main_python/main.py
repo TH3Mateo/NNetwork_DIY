@@ -1,26 +1,15 @@
-import tensorflow
-import keras
-from numba import jit, cuda
 import numpy as np
+from data_tools import data_loader
+from network import Network
+from layers import Layer
 
-print(tensorflow.__version__)
-print(keras.__version__)
+X,Y = data_loader("mnist_digits_full_dataset.csv")
+print("loaded data")
+N = Network()
+N.add_layer(Layer(784, 'sigmoid'))
+N.add_layer(Layer(512, 'relu'))
+N.add_layer(Layer(128, 'relu'))
+N.add_layer(Layer(10, 'softmax'))
 
+N.train(X,Y,100,0.01,100)
 
-
-@jit(target_backend="cuda")
-def func(a):
-    for i in range(10000000):
-        a += 1
-    return a
-
-
-
-
-def main():
-    print("start")
-    print(func(15))
-    print("end")
-
-
-main()
