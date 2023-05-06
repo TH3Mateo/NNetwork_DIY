@@ -27,6 +27,7 @@ class Network:
     #  NIE ROBIE TRANSPOZYCJI DANYCH, TRZEBA GDZIES ZROBIC
 ########################################
 
+
     def mass_predict(self, X: np.array):
         out = []
         A = cp.array(X)
