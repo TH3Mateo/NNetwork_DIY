@@ -33,4 +33,4 @@ def data_loader(filename):
     print(df.head())
     return  np.ndarray(df.drop("label", axis=1)),np.ndarray(df["label"])
 
-data_saver()
+# data_saver()
