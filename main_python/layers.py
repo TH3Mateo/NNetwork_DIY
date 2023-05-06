@@ -18,17 +18,20 @@ class Layer:
             'relu': lambda x: 1. * (x > 0),
             'softmax': lambda x: x * (1 - x),
 
-        }
+        }[activation_function]
         self.weights = None
         self.bias = None
 
 
 def calc_layer(layer: Layer, input: cp.array):
-    print(input.shape)
-    print(layer.weights.shape)
-    print(layer.bias.shape)
-    Z = cp.dot(input,cp.asarray(layer.weights) )  + cp.asarray(layer.bias)
+    # print('Layers: ')
+    # print(input.shape)
+    # print(layer.weights.shape)
+    # print(layer.bias.shape)
+    Z = cp.dot(input,cp.asarray(layer.weights)) + cp.asarray(layer.bias)
     A= layer.activation_function(Z)
+    print("LAYERO OUTPUT SHAPE:")
+    print(A.shape)
     return Z, A
 
 
