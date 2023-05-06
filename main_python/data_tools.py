@@ -3,7 +3,7 @@ import numpy as np
 
 import utilities as u
 import pandas as pd
-from sklearn import datasets
+import dask.dataframe as d
 from sklearn.datasets import fetch_openml
 import random
 import math
@@ -12,7 +12,7 @@ import os
 
 
 def data_viewer():
-    df = pd.read_csv(u.create_path("data\\mnist_digits_full_dataset.csv"))
+    df = d.read_csv(u.create_path("data\\mnist_digits_full_dataset.csv"))
     print(df.head())
     l = int(math.sqrt(len(df.iloc[0])))
     plt.imshow(df.iloc[random.randint(0,100)].values.reshape(l,l), cmap="Blues_r")
@@ -21,10 +21,14 @@ def data_viewer():
 
 def data_saver():
     db,y = fetch_openml('mnist_784',parser='auto',return_X_y=True)
-    print(db.head())
+    db = d.from_pandas(db,chunksize=128)
+    y = d.from_pandas(pd.DataFrame(y),chunksize=128)
+    print(db.shape)
+    print(y.shape)
     print(y.head())
-    df = db.concat(pd.DataFrame(y,columns=["label"]),ignore_index=True)
-    df.to_csv(u.create_path("data\\mnist_digits_full_dataset.csv"), index=False)
+    df = db.append(y)
+    print(df.head())
+    # df.to_csv(u.create_path("data\\mnist_digits_full_dataset.csv"), index=False)
 
 def data_loader(filename):
     print("Loading data...")
