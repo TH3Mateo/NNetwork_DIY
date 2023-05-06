@@ -23,7 +23,6 @@ class Layer:
         self.bias = None
 
 
-
 def calc_layer(layer: Layer, input: cp.array):
     print(input.shape)
     print(layer.weights.shape)
