@@ -25,16 +25,12 @@ class Network:
     def add_layer(self, layer: Layer):
         self.layers.append(layer)
 
-    ########################################
-    #  NIE ROBIE TRANSPOZYCJI DANYCH, TRZEBA GDZIES ZROBIC
-    ########################################
-
 
     def mass_predict(self, X: np.array):
         out = []
         A = cp.array(X)
         for layer in self.layers:
-            print(layer)
+            # print(layer)
             Z, A = layers.calc_layer(layer, A)
             # print("A:")
             # print(A.shape)
@@ -68,9 +64,9 @@ class Network:
                 # print(dZ.shape)
 
             if i == 0:
-                print("Train dw1: ")
-                print(dZ.shape)
-                print(cp.asarray(X).transpose().shape)
+                # print("Train dw1: ")
+                # print(dZ.shape)
+                # print(cp.asarray(X).transpose().shape)
 
                 dW = cp.dot(cp.asarray(X).transpose(),dZ) / len(X)
             else:
@@ -85,9 +81,9 @@ class Network:
             dB = (np.sum(dZ, axis=0)) / len(X)
             dZ_prev = dZ
             self.layers[i].weights = self.layers[i].weights - cp.asnumpy(learning_rate * dW)
-            print("----------------")
-            print(self.layers[i].weights.shape)
-            print("----------------------")
+            # print("----------------")
+            # print(self.layers[i].weights.shape)
+            # print("----------------------")
             self.layers[i].bias = self.layers[i].bias - cp.asnumpy(learning_rate * dB)
 
     # def tester(self):
@@ -116,6 +112,7 @@ class Network:
                 self.back_prop(X_batch, Y_batch, data, learning_rate)
 
                 loss = calc_loss(Y_binarator(Y_batch), output_binarator(data[-2][1]))
+                print(loss)
             iterations -= 1
 
     def save_model(self, file_name):
@@ -127,15 +124,12 @@ def calc_loss(predicted, expected):
     return np.sum((predicted - expected) ** 2) / len(predicted)
 
 
-def output_binarator(input):
-    print("Binarator ")
-    print(input)
-    output = np.zeros((10,len(input)), dtype=int)# takes output in form of probability of each class
-    for row in input:
-        max = np.argmax(row)
-        output[max][row.index] = 1
-
-    return output
+def output_binarator(output):
+    # print(output.shape)
+    out = np.zeros(tuple(reversed(output.shape)))
+    for i in range(len(output)):
+        out[np.argmax(output[i])][i]= 1
+    return out
 
 
 # z numerka klasyfikacji na array 0 i 1
