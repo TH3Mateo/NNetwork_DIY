@@ -16,3 +16,4 @@ N.add_layer(Layer(10, 'softmax'))
 # print(X[0:5])
 N.train(X,Y,100,0.01,100)
 
+N.save_model("first_working_gen")

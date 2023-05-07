@@ -36,8 +36,8 @@ class Network:
         for layer in self.layers:
             print(layer)
             Z, A = layers.calc_layer(layer, A)
-            print("A:")
-            print(A.shape)
+            # print("A:")
+            # print(A.shape)
             # print(A[0:5])
             out.append([cp.asnumpy(Z), cp.asnumpy(A)])
 
@@ -57,15 +57,15 @@ class Network:
                 # print(Y_binarator(Y).shape)
                 dZ = cp.asarray(data[i][1] - Y_binarator(Y).transpose())
             else:
-                print("i kin calculating dZ: ",i)
-                print(cp.asarray(self.layers[i+1].weights).shape)
-                print(dZ_prev.shape)
-                print(self.layers[i].activation_deriv(cp.asarray(data[i][0])).shape)
+                # print("i kin calculating dZ: ",i)
+                # print(cp.asarray(self.layers[i+1].weights).shape)
+                # print(dZ_prev.shape)
+                # print(self.layers[i].activation_deriv(cp.asarray(data[i][0])).shape)
 
 
 
                 dZ = cp.dot(dZ_prev,cp.asarray(self.layers[i+1].weights).transpose())*self.layers[i].activation_deriv(cp.asarray(data[i][0]))
-                print(dZ.shape)
+                # print(dZ.shape)
 
             if i == 0:
                 print("Train dw1: ")
@@ -74,9 +74,9 @@ class Network:
 
                 dW = cp.dot(cp.asarray(X).transpose(),dZ) / len(X)
             else:
-                print("Train dw: ")
-                print(dZ.shape)
-                print(cp.asarray(data[i - 1][1]).transpose().shape)
+                # print("Train dw: ")
+                # print(dZ.shape)
+                # print(cp.asarray(data[i - 1][1]).transpose().shape)
 
 
                 dW = cp.dot(cp.asarray(data[i - 1][1]).transpose(),(dZ)) / len(X)

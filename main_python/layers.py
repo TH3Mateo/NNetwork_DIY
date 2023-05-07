@@ -30,8 +30,8 @@ def calc_layer(layer: Layer, input: cp.array):
     # print(layer.bias.shape)
     Z = cp.dot(input,cp.asarray(layer.weights)) + cp.asarray(layer.bias)
     A= layer.activation_function(Z)
-    print("LAYERO OUTPUT SHAPE:")
-    print(A.shape)
+    # print("LAYERO OUTPUT SHAPE:")
+    # print(A.shape)
     return Z, A
 
 
