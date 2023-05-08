@@ -5,14 +5,24 @@ from layers import Layer
 #
 X,Y = data_loader("mnist_digits_full_dataset.csv")
 # print("loaded data")
+X=X/255
 N = Network()
+
+# layer(768)
+# connection 'sigmoid'
+# layer(512)
+# connection 'relu'
+# layer(128)
+# connection 'relu'
+# layer(64)
+# connection 'softmax'
+# layer(10)
+
 N.add_layer(Layer(784, 'sigmoid'))
-N.add_layer(Layer(512, 'relu'))
-N.add_layer(Layer(128, 'relu'))
 N.add_layer(Layer(10, 'softmax'))
 
 
-
+# N.add_layer(Layer(10
 
 
 
@@ -23,6 +33,6 @@ N.add_layer(Layer(10, 'softmax'))
 
 
 
-N.train(X,Y,50,0.01,5000)
+N.train(X,Y,50,0.1,5000)
 
 N.save_model("first_working_gen")

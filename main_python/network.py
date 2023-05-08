@@ -1,5 +1,8 @@
 import sys
 import math
+
+import yaml
+
 import layers
 from layers import Layer
 import numpy as np
@@ -46,8 +49,8 @@ class Network:
 
 
         dZ_prev = None
-        for i in reversed(range(len(self.layers)-1)):
-            if i == len(self.layers) - 2:
+        for i in reversed(range(len(self.layers))):
+            if i == len(self.layers) - 1:
                 # print("Train dz: ")
                 # print(data[i][1].shape)
                 # print(Y_binarator(Y).shape)
@@ -57,8 +60,6 @@ class Network:
                 # print(cp.asarray(self.layers[i+1].weights).shape)
                 # print(dZ_prev.shape)
                 # print(self.layers[i].activation_deriv(cp.asarray(data[i][0])).shape)
-
-
 
                 dZ = cp.dot(dZ_prev,cp.asarray(self.layers[i+1].weights).transpose())*self.layers[i].activation_deriv(cp.asarray(data[i][0]))
                 # print(dZ.shape)
@@ -75,7 +76,7 @@ class Network:
                 # print(cp.asarray(data[i - 1][1]).transpose().shape)
 
 
-                dW = cp.dot(cp.asarray(data[i - 1][1]).transpose(),(dZ)) / len(X)
+                dW = cp.dot(cp.asarray(data[i - 1][1]).transpose(),dZ) / len(X)
 
 
             dB = (np.sum(dZ, axis=0)) / len(X)
@@ -93,11 +94,9 @@ class Network:
     def train(self, full_X, full_Y, iterations, learning_rate, batch_size):
 
         for index in range(len(self.layers)):
-            self.layers[index].weights = np.random.rand(self.layers[index].node_count, (
-                1 if index == len(self.layers) - 1 else self.layers[index + 1].node_count)) - 0.5
-            self.layers[index].bias = np.random.rand(
-                (0 if index == len(self.layers) - 1 else self.layers[index + 1].node_count)) - 0.5
-        rounds = 0
+            self.layers[index].weights = np.random.rand(self.layers[index].node_count, (self.layers[index].node_count if index == len(self.layers) - 1 else self.layers[index + 1].node_count)) - 0.5
+            self.layers[index].bias = np.random.rand((self.layers[index].node_count if index == len(self.layers) - 1 else self.layers[index + 1].node_count)) - 0.5
+
         loss = 420  # just a big number to initiate loss for the first iteration
         batch_count = math.ceil(len(full_X) / batch_size)
         while iterations > 0 and loss > 0.01:
@@ -108,6 +107,9 @@ class Network:
                 batch = dataset[b * batch_size:(b + 1) * batch_size]  # tu trzeba bedzie zabezpieczyc w razie jakby nie dzieliło sie idealnie rowno
                 X_batch = batch[:, :-1]
                 Y_batch = batch[:, [-1]]
+
+
+
                 data = self.mass_predict(X_batch)
                 self.back_prop(X_batch, Y_batch, data, learning_rate)
 
@@ -123,7 +125,11 @@ class Network:
 
 
 def calc_loss(predicted, expected):
+
     return np.sum((predicted - expected) ** 2) / len(predicted)
+
+def calc_accuracy(predicted, expected):
+    return np.sum(np.logical_and(predicted,expected)) / len(expected)
 
 
 def output_binarator(output):
