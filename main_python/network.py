@@ -111,8 +111,10 @@ class Network:
                 data = self.mass_predict(X_batch)
                 self.back_prop(X_batch, Y_batch, data, learning_rate)
 
-                loss = calc_loss(Y_binarator(Y_batch), output_binarator(data[-2][1]))
-                print(loss)
+            loss = calc_loss(Y_binarator(Y_batch), output_binarator(data[-1][1]))
+            print("Iteration: ",iterations)
+            print("ACUURACY: ",calc_accuracy(Y_binarator(Y_batch), output_binarator(data[-1][1])))
+            print("LOSS: ",loss)
             iterations -= 1
 
     def save_model(self, file_name):
@@ -136,7 +138,9 @@ def output_binarator(output):
 def Y_binarator(Y):
     array = np.zeros((10, Y.size), dtype=int)
     for i in range(Y.size):
-        array[Y[i][0]][i] = 1
+        array[int(Y[i])][i] = 1
+    # print(Y)
+    # print(array)
     return array
 
 
