@@ -103,6 +103,7 @@ class Network:
             dataset = np.append(full_X, np.reshape(full_Y,(-1,1)), axis=1)
             # print(dataset)
             np.random.shuffle(dataset)
+
             for b in range(batch_count):
                 batch = dataset[b * batch_size:(b + 1) * batch_size]  # tu trzeba bedzie zabezpieczyc w razie jakby nie dzieliło sie idealnie rowno
                 X_batch = batch[:, :-1]

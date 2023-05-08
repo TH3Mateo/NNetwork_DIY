@@ -5,7 +5,15 @@ from layers import Layer
 #
 X,Y = data_loader("mnist_digits_full_dataset.csv")
 # print("loaded data")
+# print("X: ")
+# print(X.shape)
+# print(X)
+# print("Y: ")
+# print(Y.shape)
+# print(Y)
 X=X/255
+# print("NEW X: ")
+# print(X)
 N = Network()
 
 # layer(768)
