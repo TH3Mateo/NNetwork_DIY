@@ -32,7 +32,7 @@ class Network:
     def mass_predict(self, X: np.array):
         out = []
         A = cp.array(X)
-        for layer in self.layers:
+        for layer in self.layers[:-1]:
             # print(layer)
             Z, A = layers.calc_layer(layer, A)
             # print("A:")
@@ -49,8 +49,8 @@ class Network:
 
 
         dZ_prev = None
-        for i in reversed(range(len(self.layers))):
-            if i == len(self.layers) - 1:
+        for i in reversed(range(len(self.layers)-1)):
+            if i == len(self.layers) - 2:
                 # print("Train dz: ")
                 # print(data[i][1].shape)
                 # print(Y_binarator(Y).shape)
@@ -93,9 +93,9 @@ class Network:
 
     def train(self, full_X, full_Y, iterations, learning_rate, batch_size):
 
-        for index in range(len(self.layers)):
-            self.layers[index].weights = np.random.rand(self.layers[index].node_count, (self.layers[index].node_count if index == len(self.layers) - 1 else self.layers[index + 1].node_count)) - 0.5
-            self.layers[index].bias = np.random.rand((self.layers[index].node_count if index == len(self.layers) - 1 else self.layers[index + 1].node_count)) - 0.5
+        for index in range(len(self.layers)-1):
+            self.layers[index].weights = np.random.rand(self.layers[index].node_count,self.layers[index + 1].node_count) - 0.5
+            self.layers[index].bias = np.random.rand(self.layers[index + 1].node_count) - 0.5
 
         loss = 420  # just a big number to initiate loss for the first iteration
         batch_count = math.ceil(len(full_X) / batch_size)

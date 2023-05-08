@@ -15,7 +15,7 @@ class Layer:
         self.activation_deriv = {
             'sigmoid': lambda x: x * (1 - x),
             'tanh': lambda x: 1 - x ** 2,
-            'relu': lambda x: 1. * (x > 0),
+            'relu': lambda x: 1 * (x > 0),
             'softmax': lambda x: x * (1 - x),
 
         }[activation_function]
