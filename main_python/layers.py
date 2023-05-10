@@ -8,15 +8,17 @@ class Layer:
         self.activation_function = {
             'sigmoid': lambda x: 1 / (1 + np.exp(-x)),
             'tanh': lambda x: np.tanh(x),
-            'relu': lambda x: np.maximum(0, x),
-            'softmax': lambda x: np.exp(x) / np.sum(np.exp(x)),
+            'relu': lambda x: np.maximum(0.05*x, x),
+            'softmax': lambda x: np.exp(x)/ np.sum(np.exp(x), axis=1, keepdims=True),
+            'output': lambda x: x
         }[activation_function]
 
         self.activation_deriv = {
             'sigmoid': lambda x: x * (1 - x),
             'tanh': lambda x: 1 - x ** 2,
-            'relu': lambda x: 1 * (x > 0),
+            'relu': lambda x: np.where(x > 0, 1, 0.05),
             'softmax': lambda x: x * (1 - x),
+            'output': lambda x: 1
 
         }[activation_function]
         self.weights = None
@@ -31,7 +33,7 @@ def calc_layer(layer: Layer, input: cp.array):
     Z = cp.dot(input,cp.asarray(layer.weights)) + cp.asarray(layer.bias)
     A= layer.activation_function(Z)
     # print("LAYERO OUTPUT SHAPE:")
-    # print(A.shape)
+    # print(Z.shape)
     return Z, A
 
 

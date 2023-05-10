@@ -42,58 +42,77 @@ class Network:
 
         del Z, A
         cp._default_memory_pool.free_all_blocks()
+        # print(self.layers)
         return out
 
+    #
+    # def back_prop_old(self, X, Y, data, learning_rate):
+    #    exp_matrix = np.exp(matrix)
+
+    # Compute the sum of each row
+    # row_sum =
+    #
+    # # Divide each element of the matrix by the sum of its row
+    # softmax_matrix =
+    #
+    # return softmax_matrix
+    #
+    #
+    #
+    #     for i in reversed(range(len(self.layers[:-1]))):
+    #         if i == len(self.layers) - 2:
+    #              dZ = cp.asarray(data[i][1] - Y_binarator(Y).transpose())
+    #         else:
+    #            dZ = cp.dot(dZ_prev,cp.asarray(self.layers[i+1].weights).transpose())*self.layers[i].activation_deriv(cp.asarray(data[i][0]))
+    #         if i == len(self.layers)-1:
+    #             dW = cp.dot(cp.asarray(X).transpose(),dZ) / len(X)
+    #         else:
+    #             dW = cp.dot(cp.asarray(data[i - 1][1]).transpose(),dZ) / len(X)
+    #             print(dW.shape)
+    #
+    #         dB = (np.sum(dZ, axis=0)) / len(X)
+    #         dZ_prev = dZ
+    #         print("----------------")
+    #         print(self.layers[i].weights.shape)
+    #         print(dW.shape)
+    #         print("----------------------")
+    #         self.layers[i].weights = self.layers[i].weights - cp.asnumpy(learning_rate * dW)
+    #
+    #         self.layers[i].bias = self.layers[i].bias - cp.asnumpy(learning_rate * dB)
+
+
+
     def back_prop(self, X, Y, data, learning_rate):
-
-
-
         dZ_prev = None
-        for i in reversed(range(len(self.layers)-1)):
-            if i == len(self.layers) - 2:
-                # print("Train dz: ")
-                # print(data[i][1].shape)
-                # print(Y_binarator(Y).shape)
+        for i in reversed(range(len(self.layers[:-1]))):
+            # print(len(self.layers[:-1]))
+            # print(i)
+            if i == len(self.layers[:-1])-1:
                 dZ = cp.asarray(data[i][1] - Y_binarator(Y).transpose())
-            else:
-                # print("i kin calculating dZ: ",i)
-                # print(cp.asarray(self.layers[i+1].weights).shape)
-                # print(dZ_prev.shape)
-                # print(self.layers[i].activation_deriv(cp.asarray(data[i][0])).shape)
-
-                dZ = cp.dot(dZ_prev,cp.asarray(self.layers[i+1].weights).transpose())*self.layers[i].activation_deriv(cp.asarray(data[i][0]))
                 # print(dZ.shape)
+
+            else:
+                dZ = cp.dot(dZ_prev,cp.asarray(self.layers[i+1].weights).transpose())*self.layers[i].activation_deriv(cp.asarray(data[i][0]))
 
             if i == 0:
-                # print("Train dw1: ")
-                # print(dZ.shape)
-                # print(cp.asarray(X).transpose().shape)
-
                 dW = cp.dot(cp.asarray(X).transpose(),dZ) / len(X)
+
             else:
-                # print("Train dw: ")
-                # print(dZ.shape)
-                # print(cp.asarray(data[i - 1][1]).transpose().shape)
-
-
                 dW = cp.dot(cp.asarray(data[i - 1][1]).transpose(),dZ) / len(X)
 
-
             dB = (np.sum(dZ, axis=0)) / len(X)
-            dZ_prev = dZ
-            self.layers[i].weights = self.layers[i].weights - cp.asnumpy(learning_rate * dW)
-            # print("----------------")
-            # print(self.layers[i].weights.shape)
-            # print("----------------------")
-            self.layers[i].bias = self.layers[i].bias - cp.asnumpy(learning_rate * dB)
 
-    # def tester(self):
-    #     for i in reversed(range(len(self.layers))):
-    #         print(i)
+            self.layers[i].weights = self.layers[i].weights - cp.asnumpy(learning_rate * dW)
+            self.layers[i].bias = self.layers[i].bias - cp.asnumpy(learning_rate * dB)
+            dZ_prev = dZ
+
+
+        # sys.exit()
 
     def train(self, full_X, full_Y, iterations, learning_rate, batch_size):
 
         for index in range(len(self.layers)-1):
+            print(index)
             self.layers[index].weights = np.random.rand(self.layers[index].node_count,self.layers[index + 1].node_count) - 0.5
             self.layers[index].bias = np.random.rand(self.layers[index + 1].node_count) - 0.5
 
@@ -115,9 +134,9 @@ class Network:
                 self.back_prop(X_batch, Y_batch, data, learning_rate)
 
             loss = calc_loss(Y_binarator(Y_batch), output_binarator(data[-1][1]))
-            print("Iteration: ",iterations)
+            # print("Iteration: ",iterations)
             print("ACUURACY: ",calc_accuracy(Y_binarator(Y_batch), output_binarator(data[-1][1])))
-            print("LOSS: ",loss)
+            # print("LOSS: ",loss)
             iterations -= 1
 
     def save_model(self, file_name):
@@ -127,10 +146,10 @@ class Network:
 
 def calc_loss(predicted, expected):
 
-    return np.sum((predicted - expected) ** 2) / len(predicted)
+    return np.sum(np.logical_xor(predicted ,expected) / len(predicted) ** 2)
 
 def calc_accuracy(predicted, expected):
-    return np.sum(np.logical_and(predicted,expected)) / len(expected)
+    return np.sum(np.logical_and(predicted,expected)) / len(predicted[0])
 
 
 def output_binarator(output):

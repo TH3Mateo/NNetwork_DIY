@@ -28,8 +28,9 @@ N = Network()
 
 N.add_layer(Layer(784, 'sigmoid'))
 N.add_layer(Layer(512, 'relu'))
-# N.add_layer(Layer(128, 'tanh'))
-N.add_layer(Layer(10, 'softmax'))
+N.add_layer(Layer(128, 'tanh'))
+N.add_layer(Layer(64, 'softmax'))
+N.add_layer(Layer(10, 'output'))
 
 
 # N.add_layer(Layer(10
