@@ -21,20 +21,20 @@ X_train = data_train[0:n-1]
 X_train = X_train / 255.
 _, m_train = X_train.shape
 #
-N.layer(784)
-N.connection('relu')
-# N.layer(512)
+# N.layer(784)
 # N.connection('relu')
-N.layer(128)
-N.connection('relu')
-N.layer(64)
-N.connection('softmax')
-N.layer(10)
-
-W,b = N.main(X_train,Y_train,0.10,500,m)
-print(W,b) #zapisać dane do wykorzystania
-print(type(W))
-N.save(W,b,connections,"chaotic_working") #zapisać dane do wykorzystania
+# # N.layer(512)
+# # N.connection('relu')
+# N.layer(128)
+# N.connection('relu')
+# N.layer(64)
+# N.connection('softmax')
+# N.layer(10)
+#
+# W,b = N.main(X_train,Y_train,0.10,500,m)
+# print(W,b) #zapisać dane do wykorzystania
+# print(type(W))
+# N.save(W,b,connections,"chaotic_working") #zapisać dane do wykorzystania
 
 
 #stworzyć funkcjie wykorzystującą zapisane dane

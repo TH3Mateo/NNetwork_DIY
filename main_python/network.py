@@ -161,7 +161,7 @@ def gradient_descent(X, Y, alpha, iterations):
             predictions = get_predictions(A[-1])
             accuracy = get_accuracy(predictions, Y)
             print(accuracy)
-            if accuracy > 0.55:
+            if accuracy > 0.85:
                 return W, b
     return W, b
 
