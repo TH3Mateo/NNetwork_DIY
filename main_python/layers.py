@@ -3,6 +3,14 @@ import numpy as np
 import cupy as cp
 
 class Layer:
+
+
+    def softmax_deriv(self,X):
+        softmax_matrix = np.exp(X) / np.sum(np.exp(X), axis=1, keepdims=True)
+        return softmax_matrix[:, :, np.newaxis] * (
+                    np.expand_dims(np.eye(X.shape[1]), axis=0) - softmax_matrix[:, np.newaxis, :])
+
+
     def __init__(self, node_count: int, activation_function: str):
         self.node_count = node_count
         self.activation_function = {
@@ -17,7 +25,7 @@ class Layer:
             'sigmoid': lambda x: x * (1 - x),
             'tanh': lambda x: 1 - x ** 2,
             'relu': lambda x: np.where(x > 0, 1, 0.05),
-            'softmax': lambda x: x * (1 - x),
+            'softmax': lambda x: self.softmax_deriv(x),
             'output': lambda x: 1
 
         }[activation_function]

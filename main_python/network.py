@@ -1,13 +1,8 @@
-import sys
 import math
-
-import yaml
-
 import layers
 from layers import Layer
 import numpy as np
 import cupy as cp
-import random
 
 try:
     import cPickle as pickle
@@ -15,8 +10,6 @@ except ModuleNotFoundError:
     import pickle
 import utilities as u
 
-
-# from numba import jit
 
 
 class Network:
@@ -56,8 +49,7 @@ class Network:
     # softmax_matrix =
     #
     # return softmax_matrix
-    #
-    #
+
     #
     #     for i in reversed(range(len(self.layers[:-1]))):
     #         if i == len(self.layers) - 2:
@@ -104,7 +96,7 @@ class Network:
 
             self.layers[i].weights = self.layers[i].weights - cp.asnumpy(learning_rate * dW)
             self.layers[i].bias = self.layers[i].bias - cp.asnumpy(learning_rate * dB)
-            dZ_prev = dZ
+            dZ_prev = dZ.copy()
 
 
         # sys.exit()
@@ -118,7 +110,7 @@ class Network:
 
         loss = 420  # just a big number to initiate loss for the first iteration
         batch_count = math.ceil(len(full_X) / batch_size)
-        while iterations > 0 and loss > 0.01:
+        while iterations > 0 and self.loss > 0.01:
             dataset = np.append(full_X, np.reshape(full_Y,(-1,1)), axis=1)
             # print(dataset)
             np.random.shuffle(dataset)
@@ -133,7 +125,7 @@ class Network:
                 data = self.mass_predict(X_batch)
                 self.back_prop(X_batch, Y_batch, data, learning_rate)
 
-            loss = calc_loss(Y_binarator(Y_batch), output_binarator(data[-1][1]))
+            self.loss = calc_loss(Y_binarator(Y_batch), output_binarator(data[-1][1]))
             # print("Iteration: ",iterations)
             print("ACUURACY: ",calc_accuracy(Y_binarator(Y_batch), output_binarator(data[-1][1])))
             # print("LOSS: ",loss)
