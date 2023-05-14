@@ -1,173 +1,209 @@
+import sys
 import math
+
+import yaml
+
 import layers
-from layers import Layer
+# from layers import layer_activation
 import numpy as np
 import cupy as cp
+import random
+import data_tools as d
+import layers
+import utilities as uti
+import data_tools as dt
 
-try:
-    import cPickle as pickle
-except ModuleNotFoundError:
-    import pickle
-import utilities as u
+import os
 
+layers = []
+connections = []
+def layer(new_layer):
+    layers.append(new_layer)
+def connection(new_connection):
+    connections.append(new_connection)
 
+def init_params_modular():
+    W, b = [], []
+    print(connections)
+    for i in range(len(connections)):
+        W.append(np.random.rand(layers[i+1], layers[i]) - 0.5)
+        b.append(np.random.rand(layers[i+1], 1) - 0.5)
+    return W, b
 
-class Network:
-    def __init__(self):
-        self.layers = []
-        self.loss = None
-        self.loss_prime = None
+# function_dic = {
+#     'sigmoid': lambda x: 1 / (1 + np.exp(-x)),
+#     'tanh': lambda x: np.tanh(x),
+#     'relu': lambda x: np.maximum(0.05 * x, x),
+#     'softmax': lambda x: np.exp(x)/sum(np.exp(x)),
+#     'output': lambda x: x
+# }
 
-    def add_layer(self, layer: Layer):
-        self.layers.append(layer)
-
-
-    def mass_predict(self, X: np.array):
-        out = []
-        A = cp.array(X)
-        for layer in self.layers[:-1]:
-            # print(layer)
-            Z, A = layers.calc_layer(layer, A)
-            # print("A:")
-            # print(A.shape)
-            # print(A[0:5])
-            out.append([cp.asnumpy(Z), cp.asnumpy(A)])
-
-        del Z, A
-        cp._default_memory_pool.free_all_blocks()
-        # print(self.layers)
-        return out
-
-    #
-    # def back_prop_old(self, X, Y, data, learning_rate):
-    #    exp_matrix = np.exp(matrix)
-
-    # Compute the sum of each row
-    # row_sum =
-    #
-    # # Divide each element of the matrix by the sum of its row
-    # softmax_matrix =
-    #
-    # return softmax_matrix
-
-    #
-    #     for i in reversed(range(len(self.layers[:-1]))):
-    #         if i == len(self.layers) - 2:
-    #              dZ = cp.asarray(data[i][1] - Y_binarator(Y).transpose())
-    #         else:
-    #            dZ = cp.dot(dZ_prev,cp.asarray(self.layers[i+1].weights).transpose())*self.layers[i].activation_deriv(cp.asarray(data[i][0]))
-    #         if i == len(self.layers)-1:
-    #             dW = cp.dot(cp.asarray(X).transpose(),dZ) / len(X)
-    #         else:
-    #             dW = cp.dot(cp.asarray(data[i - 1][1]).transpose(),dZ) / len(X)
-    #             print(dW.shape)
-    #
-    #         dB = (np.sum(dZ, axis=0)) / len(X)
-    #         dZ_prev = dZ
-    #         print("----------------")
-    #         print(self.layers[i].weights.shape)
-    #         print(dW.shape)
-    #         print("----------------------")
-    #         self.layers[i].weights = self.layers[i].weights - cp.asnumpy(learning_rate * dW)
-    #
-    #         self.layers[i].bias = self.layers[i].bias - cp.asnumpy(learning_rate * dB)
+def function_type(Z, type):
+    if type == 'relu':
+        return np.maximum(Z, 0)
+    elif type == 'softmax':
+        A = np.exp(Z)/sum(np.exp(Z))
+        return A
+    elif type == 'tanh':
+        return np.tanh(Z)
+    elif type == 'sigmoid':
+        return 1 / (1 + np.exp(-Z))
+    else:
+        print("Funkcja poza zakresem")
 
 
 
-    def back_prop(self, X, Y, data, learning_rate):
-        dZ_prev = None
-        for i in reversed(range(len(self.layers[:-1]))):
-            # print(len(self.layers[:-1]))
-            # print(i)
-            if i == len(self.layers[:-1])-1:
-                dZ = cp.asarray(data[i][1] - Y_binarator(Y).transpose())
-                # print(dZ.shape)
+def forward_prop_modular(W, b, X, type):
+    Z, A = [], []
+    for i in range(len(W)):
+        if i == 0:
+            # print(W[i].shape)
+            # print(X.shape)
+            Z.append(W[i].dot(X) + b[i])
+            A.append(function_type(Z[i], type[i]))
+        else:
+            Z.append(W[i].dot(A[i-1]) + b[i])
+            A.append(function_type(Z[i], type[i]))
+    return Z, A
 
-            else:
-                dZ = cp.dot(dZ_prev,cp.asarray(self.layers[i+1].weights).transpose())*self.layers[i].activation_deriv(cp.asarray(data[i][0]))
+def softmax_deriv(X):
+    softmax_matrix = np.exp(X) / np.sum(np.exp(X), axis=1, keepdims=True)
+    return softmax_matrix[:, :, np.newaxis] * (
+                np.expand_dims(np.eye(X.shape[1]), axis=0) - softmax_matrix[:, np.newaxis, :])
 
-            if i == 0:
-                dW = cp.dot(cp.asarray(X).transpose(),dZ) / len(X)
+# deriv_dic = {
+#     'sigmoid': lambda x: x * (1 - x),
+#     'tanh': lambda x: 1 - x ** 2,
+#     'relu': lambda x: x > 0,
+#     'softmax': lambda x: softmax_deriv(x),
+#     'output': lambda x: 1
+# }
 
-            else:
-                dW = cp.dot(cp.asarray(data[i - 1][1]).transpose(),dZ) / len(X)
-
-            dB = (np.sum(dZ, axis=0)) / len(X)
-
-            self.layers[i].weights = self.layers[i].weights - cp.asnumpy(learning_rate * dW)
-            self.layers[i].bias = self.layers[i].bias - cp.asnumpy(learning_rate * dB)
-            dZ_prev = dZ.copy()
-
-
-        # sys.exit()
-
-    def train(self, full_X, full_Y, iterations, learning_rate, batch_size):
-
-        for index in range(len(self.layers)-1):
-            print(index)
-            self.layers[index].weights = np.random.rand(self.layers[index].node_count,self.layers[index + 1].node_count) - 0.5
-            self.layers[index].bias = np.random.rand(self.layers[index + 1].node_count) - 0.5
-
-        loss = 420  # just a big number to initiate loss for the first iteration
-        batch_count = math.ceil(len(full_X) / batch_size)
-        while iterations > 0 and self.loss > 0.01:
-            dataset = np.append(full_X, np.reshape(full_Y,(-1,1)), axis=1)
-            # print(dataset)
-            np.random.shuffle(dataset)
-
-            for b in range(batch_count):
-                batch = dataset[b * batch_size:(b + 1) * batch_size]  # tu trzeba bedzie zabezpieczyc w razie jakby nie dzieliło sie idealnie rowno
-                X_batch = batch[:, :-1]
-                Y_batch = batch[:, [-1]]
+def deriv_type(Z,type):
+    if type == 'relu':
+        return Z > 0
+    elif type == 'softmax':
+        A = softmax_deriv(Z)
+        return A
+    elif type == 'tanh':
+        return 1 - Z ** 2
+    elif type == 'sigmoid':
+        return Z * (1 - Z)
+    else:
+        print("Funkcja poza zakresem")
 
 
-
-                data = self.mass_predict(X_batch)
-                self.back_prop(X_batch, Y_batch, data, learning_rate)
-
-            self.loss = calc_loss(Y_binarator(Y_batch), output_binarator(data[-1][1]))
-            # print("Iteration: ",iterations)
-            print("ACUURACY: ",calc_accuracy(Y_binarator(Y_batch), output_binarator(data[-1][1])))
-            # print("LOSS: ",loss)
-            iterations -= 1
-
-    def save_model(self, file_name):
-        with open(u.create_path("models\\" + file_name), 'wb') as f:
-            pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
+def one_hot(Y):
+    one_hot_Y = np.zeros((Y.size, Y.max() + 1))
+    one_hot_Y[np.arange(Y.size), Y] = 1
+    one_hot_Y = one_hot_Y.T
+    return one_hot_Y
 
 
-def calc_loss(predicted, expected):
-
-    return np.sum(np.logical_xor(predicted ,expected) / len(predicted) ** 2)
-
-def calc_accuracy(predicted, expected):
-    return np.sum(np.logical_and(predicted,expected)) / len(predicted[0])
-
-
-def output_binarator(output):
-    # print(output.shape)
-    out = np.zeros(tuple(reversed(output.shape)))
-    for i in range(len(output)):
-        out[np.argmax(output[i])][i]= 1
-    return out
-
-
-# z numerka klasyfikacji na array 0 i 1
-def Y_binarator(Y):
-    array = np.zeros((10, Y.size), dtype=int)
-    for i in range(Y.size):
-        array[int(Y[i])][i] = 1
-    # print(Y)
-    # print(array)
-    return array
+# dane wejściowe to tablice pełne danych które powinny otrzymać
+def back_prop_modular(Z, A, W, X, Y):
+    one_hot_Y = one_hot(Y)
+    dZ, dW, db = [], [], []
+    for i in range(len(A)):
+        dZ.append(0)
+        dW.append(0)
+        db.append(0)
+    for i in reversed(range(len(A))):
+        if i == len(A)-1:
+            dZ[i] = A[i] - one_hot_Y
+            dW[i] = 1 / m * dZ[i].dot(A[i-1].T)
+            db[i] = 1 / m * np.sum(dZ[i])
+        elif i != 0:
+            dZ[i] = W[i+1].T.dot(dZ[i+1]) * deriv_type(Z[i],connections[i])
+            dW[i] = 1 / m * dZ[i].dot(A[i-1].T)
+            db[i] = 1 / m * np.sum(dZ[i])
+        else:
+            dZ[i] = W[i+1].T.dot(dZ[i+1]) * deriv_type(Z[i],connections[i])
+            dW[i] = 1 / m * dZ[i].dot(X.T)
+            db[i] = 1 / m * np.sum(dZ[i])
+    return dW, db
 
 
 
-# z softmax na końcowe dane
-def output_numerator(output):
-    max=[]
-    output = np.array(output)
-    for i in range(len(output)):
-        max.append(np.argmax(output[i]))
-    return max
+def update_params_modular(W, b, dW, db, alpha):
+    for i in range(len(W)):
+        W[i] = W[i] - alpha * dW[i]
+        b[i] = b[i] - alpha * db[i]
+    return W, b
 
+
+def get_predictions(A2):  # 0-9
+    return np.argmax(A2, 0)
+
+
+def get_accuracy(predictions, Y):
+    print(predictions, Y)
+    return np.sum(predictions == Y) / Y.size
+
+
+def gradient_descent(X, Y, alpha, iterations):
+    print(X.shape)
+    print(Y.shape)
+    print(m)
+    temp = []
+    # W1, b1, W2, b2 = init_params()
+    W, b = init_params_modular()
+    for i in range(iterations):
+
+        Z, A = forward_prop_modular(W, b, X, connections)
+
+        dW, db = back_prop_modular(Z, A, W, X, Y)
+
+        W, b = update_params_modular(W, b, dW, db, alpha)
+
+        if i % 10 == 0:
+            print("Iteration: ", i)
+            predictions = get_predictions(A[-1])
+            accuracy = get_accuracy(predictions, Y)
+            print(accuracy)
+            if accuracy > 0.55:
+                return W, b
+    return W, b
+
+def main(X_train,Y_train,alpha,iterations,number):
+    global m
+    m = number
+
+    W,b = gradient_descent(X_train, Y_train, alpha, iterations)
+    return W,b
+
+
+def single_predict(W,b,connections, X):
+    Z, A = [], []
+    for i in range(len(W)):
+        if i == 0:
+            # print(W[i].shape)
+            # print(X.shape)
+            Z.append(W[i].dot(X) + b[i])
+            A.append(function_type(Z[i], connections[i]))
+        else:
+            Z.append(W[i].dot(A[i-1]) + b[i])
+            A.append(function_type(Z[i], connections[i]))
+            print(A[-1].shape)
+    return get_predictions(A[-1])
+
+def save(W,b,connections,filename):
+    # os.mkdir(d.create_path("models\\"+filename))
+    for i in range(len(W)):
+        np.save(d.create_path("models\\"+filename+"\\W"+str(i)+".npy"), W[i])
+        np.save(d.create_path("models\\"+filename+"\\b"+str(i)+".npy"), b[i])
+        np.save(d.create_path("models\\"+filename+"\\connections"+str(i)+".npy"), connections[i])
+
+def load(filename):
+    W,b,connections = [],[],[]
+    for i in range(int(len(os.listdir(d.create_path("models\\"+filename)))/3)):
+        W.append(np.load(d.create_path("models\\"+filename+"\\W"+str(i)+".npy")))
+        b.append(np.load(d.create_path("models\\"+filename+"\\b"+str(i)+".npy")))
+        connections.append(np.load(d.create_path("models\\"+filename+"\\connections"+str(i)+".npy")))
+    return W,b,connections
+
+def test_network(W,b,connections,X,Y):
+    Z, A = forward_prop_modular(W, b, X, connections)
+    predictions = get_predictions(A[-1])
+    accuracy = get_accuracy(predictions, Y)
+    print("Loaded model accuracy: " + str(accuracy))
